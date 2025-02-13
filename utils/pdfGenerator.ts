@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 import { FormData } from "../types/worksheet";
 import { EngagementScheduleData } from "@/types/engagement";
 import { ActivityReportData } from "@/types/activity";
+import { AllotmentFormData } from "@/types/allotment";
 
 export const generateWorksheetPDF = (formData: FormData): void => {
   const doc = new jsPDF();
@@ -278,8 +279,12 @@ export const generateEngagementPDF = (data: EngagementScheduleData): void => {
 };
 
 export const generateActivityReportPDF = (data: ActivityReportData): void => {
-  const doc = new jsPDF();
-  
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+    
   // Add Times New Roman font
   doc.setFont("times", "bold");
 
@@ -379,4 +384,152 @@ export const generateActivityReportPDF = (data: ActivityReportData): void => {
 
   // Save PDF
   doc.save("project_activity_report.pdf");
+};
+
+export const generateAllotmentPDF = (data: AllotmentFormData): void => {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  // Define page dimensions
+  const pageWidth = doc.internal.pageSize.width;
+
+  // Helper function for centered text
+  const centeredText = (text: string, y: number, fontSize: number = 12, isBold: boolean = true) => {
+    doc.setFontSize(fontSize);
+    doc.setFont('times', isBold ? 'bold' : 'normal');
+    doc.text(text, pageWidth / 2, y, { align: 'center' });
+  };
+
+  // Title Page - All bold
+  centeredText('Major Project', 50, 24);
+  centeredText('Student Engagement Schedule', 70, 20);
+
+  // Submitted By section - Headers bold, content normal
+  centeredText('Submitted By', 120, 16);
+  centeredText(data.studentName, 130, 14, false);
+  centeredText(`(${data.rollNo})`, 140, 14, false);
+
+  // Guided By section - Headers bold, content normal
+  centeredText('Guided By', 160, 16);
+  centeredText(data.guidedBy, 170, 14, false);
+
+  // University details - All bold with larger image
+  doc.addImage('/Logo.png', 'PNG', pageWidth/2 - 40, 190, 80, 40);
+  
+  centeredText(data.department, 245, 12);
+  centeredText('Institute of Technology', 252, 12);
+  centeredText('Nirma University', 259, 12);
+  centeredText('Ahmedabad - 382481', 266, 12);
+
+  // Second Page
+  doc.addPage();
+  
+  // Reset to normal font settings
+  doc.setFont("times", "bold");
+  doc.setFontSize(14);
+  let yPos = 20;
+
+  // Company Name
+  doc.text("Company Name", 20, yPos);
+  yPos += 10;
+  doc.setFont("times", "normal");
+  doc.text(data.companyName, 20, yPos);
+  yPos += 20;
+
+  // Company Address
+  doc.setFont("times", "bold");
+  doc.text("Company Address", 20, yPos);
+  yPos += 10;
+  doc.setFont("times", "normal");
+  
+  if (data.companyAddress.new) {
+    // If there's a new address, show both old and new
+    doc.text("Old Address:", 20, yPos);
+    const oldAddressLines = doc.splitTextToSize(data.companyAddress.old, 170);
+    doc.text(oldAddressLines, 20, yPos + 7);
+    yPos += (oldAddressLines.length * 7) + 15;
+
+    doc.text("New Address:", 20, yPos);
+    const newAddressLines = doc.splitTextToSize(data.companyAddress.new, 170);
+    doc.text(newAddressLines, 20, yPos + 7);
+    yPos += (newAddressLines.length * 7) + 15;
+  } else {
+    // If there's only one address, show it without old/new label
+    const addressLines = doc.splitTextToSize(data.companyAddress.old, 170);
+    doc.text(addressLines, 20, yPos);
+    yPos += (addressLines.length * 7) + 15;
+  }
+
+  // Internship Duration
+  doc.setFont("times", "bold");
+  doc.text("Internship Duration", 20, yPos);
+  yPos += 10;
+  doc.setFont("times", "normal");
+  
+  const startDate = new Date(data.internshipDuration.start);
+  const endDate = new Date(data.internshipDuration.end);
+  const formattedStart = startDate.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  const formattedEnd = endDate.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  doc.text(`${formattedStart} to ${formattedEnd}`, 20, yPos);
+  yPos += 20;
+
+  // About the Company
+  doc.setFont("times", "bold");
+  doc.text("About the company", 20, yPos);
+  yPos += 10;
+  doc.setFont("times", "normal");
+  const aboutLines = doc.splitTextToSize(data.aboutCompany, 170);
+  doc.text(aboutLines, 20, yPos);
+  yPos += (aboutLines.length * 7) + 15;
+
+  // Project Definition
+  doc.setFont("times", "bold");
+  doc.text("Project Definition", 20, yPos);
+  yPos += 10;
+  doc.setFont("times", "normal");
+
+  data.projectPoints.forEach((point, index) => {
+    const pointText = `${index + 1}. ${point.point}`;
+    const pointLines = doc.splitTextToSize(pointText, 165);
+    
+    // Check if we need a new page
+    if (yPos + (pointLines.length * 7) > 280) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.text(pointLines, 20, yPos);
+    yPos += (pointLines.length * 7) + 5;
+  });
+
+  // Add signature section at the bottom
+  yPos = Math.max(yPos + 20, 240); // Ensure minimum space for signature
+
+  doc.setFont("times", "normal");
+  doc.text(data.projectHead.name, 20, yPos);
+  yPos += 7;
+  doc.text(data.projectHead.designation, 20, yPos);
+  yPos += 15;
+  
+  // Format and add date
+  const formattedDate = new Date(data.date).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  doc.text(`Date: ${formattedDate}`, 20, yPos);
+
+  // Save PDF
+  doc.save("project_allotment_letter.pdf");
 };

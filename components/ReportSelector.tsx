@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorksheetForm } from "./WorksheetForm";
 import { EngagementForm } from "./EngagementForm";
 import { ActivityReportForm } from "./ActivityReportForm";
+import AllotmentForm from "./AllotmentForm";
 
 export const ReportSelector: React.FC = () => {
   return (
@@ -26,10 +27,11 @@ export const ReportSelector: React.FC = () => {
       </div>
 
       <Tabs defaultValue="DWS" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="DWS">Daily Worksheet</TabsTrigger>
           <TabsTrigger value="ENGAGEMENT">Student Engagement</TabsTrigger>
           <TabsTrigger value="PAR">Project Activity Report</TabsTrigger>
+          <TabsTrigger value="ALLOTMENT">Project Allotment</TabsTrigger>
         </TabsList>
 
         <TabsContent value="DWS" className="mt-6">
@@ -70,6 +72,20 @@ export const ReportSelector: React.FC = () => {
             </CardHeader>
             <CardContent>
               <ActivityReportForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ALLOTMENT" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Allotment Letter</CardTitle>
+              <CardDescription>
+                Generate your project allotment letter with company and project details.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AllotmentForm />
             </CardContent>
           </Card>
         </TabsContent>
