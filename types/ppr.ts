@@ -39,5 +39,9 @@ export interface PPRFormData {
   toolset: ToolsetCategory[];
   scheduleImage: File | null;
   personalDetails: PersonalDetails;
+  projectHead: {
+    name: string;
+    designation: string;
+  };
   date: string;
 }

@@ -48,10 +48,14 @@ interface FormData {
   toolset: ToolsetCategory[];
   scheduleImage: File | null;
   personalDetails: PersonalDetails;
+  projectHead: {
+    name: string;
+    designation: string;
+  };
   date: string;
 }
 
-type SectionType = 'objective' | 'scope' | 'testing' | 'qa' | 'toolset';
+type SectionType = "objective" | "scope" | "testing" | "qa" | "toolset";
 
 export const PPRForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -71,9 +75,12 @@ export const PPRForm: React.FC = () => {
       distance: "",
       transport: "",
     },
+    projectHead: {
+      name: "",
+      designation: "",
+    },
     date: new Date().toISOString().split("T")[0],
   });
-
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -103,12 +110,13 @@ export const PPRForm: React.FC = () => {
     value: string,
     type: "scope" | "testing" | "qa"
   ) => {
-    const field = type === "scope" 
-      ? "scopePoints" 
-      : type === "testing" 
-      ? "testingPoints" 
-      : "qaPoints";
-    
+    const field =
+      type === "scope"
+        ? "scopePoints"
+        : type === "testing"
+        ? "testingPoints"
+        : "qaPoints";
+
     const newPoints = [...formData[field]];
     newPoints[index] = { point: value };
     setFormData((prev) => ({ ...prev, [field]: newPoints }));
@@ -187,15 +195,16 @@ export const PPRForm: React.FC = () => {
   };
 
   const removeSection = (index: number, type: SectionType) => {
-    const field = type === "objective"
-      ? "objectives"
-      : type === "scope"
-      ? "scopePoints"
-      : type === "testing"
-      ? "testingPoints"
-      : type === "qa"
-      ? "qaPoints"
-      : "toolset";
+    const field =
+      type === "objective"
+        ? "objectives"
+        : type === "scope"
+        ? "scopePoints"
+        : type === "testing"
+        ? "testingPoints"
+        : type === "qa"
+        ? "qaPoints"
+        : "toolset";
 
     if (formData[field].length <= 1) return;
 
@@ -222,6 +231,19 @@ export const PPRForm: React.FC = () => {
       setFormData((prev) => ({ ...prev, toolset: newToolset }));
       toast.success("Tool removed");
     }
+  };
+
+  const handleProjectHeadChange = (
+    field: "name" | "designation",
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      projectHead: {
+        ...prev.projectHead,
+        [field]: value,
+      },
+    }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -499,7 +521,9 @@ export const PPRForm: React.FC = () => {
 
           {/* Project Specifications */}
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Specifications of the Project</h3>
+            <h3 className="text-lg font-semibold">
+              Specifications of the Project
+            </h3>
             <Textarea
               name="specifications"
               value={formData.specifications}
@@ -602,12 +626,14 @@ export const PPRForm: React.FC = () => {
           {/* Personal Details */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Personal Details</h3>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Address of stay</label>
               <Textarea
                 value={formData.personalDetails.address}
-                onChange={(e) => handlePersonalDetailsChange("address", e.target.value)}
+                onChange={(e) =>
+                  handlePersonalDetailsChange("address", e.target.value)
+                }
                 className="w-full"
                 placeholder="Enter your complete address"
                 required
@@ -615,10 +641,14 @@ export const PPRForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Distance from company</label>
+              <label className="text-sm font-medium">
+                Distance from company
+              </label>
               <Input
                 value={formData.personalDetails.distance}
-                onChange={(e) => handlePersonalDetailsChange("distance", e.target.value)}
+                onChange={(e) =>
+                  handlePersonalDetailsChange("distance", e.target.value)
+                }
                 placeholder="e.g., 11 kms"
                 className="w-full"
                 required
@@ -629,12 +659,58 @@ export const PPRForm: React.FC = () => {
               <label className="text-sm font-medium">Mode of Transport</label>
               <Input
                 value={formData.personalDetails.transport}
-                onChange={(e) => handlePersonalDetailsChange("transport", e.target.value)}
+                onChange={(e) =>
+                  handlePersonalDetailsChange("transport", e.target.value)
+                }
                 placeholder="e.g., Auto"
                 className="w-full"
                 required
               />
             </div>
+          </div>
+
+          {/* Project Head Details */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Project Head Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Name</label>
+                <Input
+                  value={formData.projectHead.name}
+                  onChange={(e) =>
+                    handleProjectHeadChange("name", e.target.value)
+                  }
+                  placeholder="Enter project head name"
+                  className="w-full"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Designation</label>
+                <Input
+                  value={formData.projectHead.designation}
+                  onChange={(e) =>
+                    handleProjectHeadChange("designation", e.target.value)
+                  }
+                  placeholder="Enter designation"
+                  className="w-full"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Date */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Date</label>
+            <Input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              className="w-full"
+              required
+            />
           </div>
 
           {/* Submit Button */}

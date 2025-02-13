@@ -940,9 +940,16 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.text(data.personalDetails.transport, margins.left, yPos);
 
   // Signature section at bottom of page
-  yPos = pageHeight - margins.bottom - 40;
-  doc.text("Sign of Engineer In-charge / Project", margins.left, yPos);
+  yPos = pageHeight - margins.bottom - 60; // Increased space for head details
+  
+  // Project Head details
+  doc.setFont("times", "normal");
+  doc.text(data.projectHead.name, margins.left, yPos);
   yPos += SUBSECTION_SPACING;
+  doc.text(data.projectHead.designation, margins.left, yPos);
+  yPos += SECTION_SPACING;
+  
+  // Date
   doc.text(
     `Date: ${new Date(data.date).toLocaleDateString("en-GB", {
       day: "numeric",
