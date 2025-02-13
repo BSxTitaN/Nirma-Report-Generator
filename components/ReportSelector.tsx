@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorksheetForm } from "./WorksheetForm";
 import { EngagementForm } from "./EngagementForm";
+import { ActivityReportForm } from "./ActivityReportForm";
 
 export const ReportSelector: React.FC = () => {
   return (
@@ -25,9 +26,10 @@ export const ReportSelector: React.FC = () => {
       </div>
 
       <Tabs defaultValue="DWS" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="DWS">Daily Worksheet</TabsTrigger>
           <TabsTrigger value="ENGAGEMENT">Student Engagement</TabsTrigger>
+          <TabsTrigger value="PAR">Project Activity Report</TabsTrigger>
         </TabsList>
 
         <TabsContent value="DWS" className="mt-6">
@@ -54,6 +56,20 @@ export const ReportSelector: React.FC = () => {
             </CardHeader>
             <CardContent>
               <EngagementForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="PAR" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Activity Report (PAR)</CardTitle>
+              <CardDescription>
+                Generate structured reports for your project activities and progress.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ActivityReportForm />
             </CardContent>
           </Card>
         </TabsContent>

@@ -2,6 +2,7 @@
 import jsPDF from "jspdf";
 import { FormData } from "../types/worksheet";
 import { EngagementScheduleData } from "@/types/engagement";
+import { ActivityReportData } from "@/types/activity";
 
 export const generateWorksheetPDF = (formData: FormData): void => {
   const doc = new jsPDF();
@@ -274,4 +275,108 @@ export const generateEngagementPDF = (data: EngagementScheduleData): void => {
 
   // Save PDF
   doc.save('student_engagement_schedule.pdf');
+};
+
+export const generateActivityReportPDF = (data: ActivityReportData): void => {
+  const doc = new jsPDF();
+  
+  // Add Times New Roman font
+  doc.setFont("times", "bold");
+
+  // Header
+  doc.setFontSize(16);
+  doc.text("NIRMA UNIVERSITY", 105, 20, { align: "center" });
+  doc.text("INSTITUTE OF TECHNOLOGY", 105, 30, { align: "center" });
+  doc.text("COMPUTER SCIENCE ENGINEERING", 105, 40, { align: "center" });
+  doc.text("PROJECT ACTIVITY REPORT (PAR)", 105, 50, { align: "center" });
+
+  // Student Details
+  doc.setFontSize(12);
+  doc.text("NAME OF THE STUDENT", 20, 70);
+  doc.text(":", 80, 70);
+  doc.setFont("times", "normal");
+  doc.text(data.studentName, 85, 70);
+
+  doc.setFont("times", "bold");
+  doc.text("ROLL NO.", 20, 80);
+  doc.text(":", 80, 80);
+  doc.setFont("times", "normal");
+  doc.text(data.rollNo, 85, 80);
+
+  doc.setFont("times", "bold");
+  doc.text("NAME OF THE COMPANY", 20, 90);
+  doc.text(":", 80, 90);
+  doc.setFont("times", "normal");
+  doc.text(data.companyName, 85, 90);
+
+  let yPos = 110;
+
+  // Summary header with proper underline
+  doc.setFont("times", "bold");
+  doc.text("Summary", 20, yPos);
+  doc.setLineWidth(0.5);
+  doc.line(20, yPos + 2, 70, yPos + 2); // Underline below text
+  yPos += 10;
+
+  // Weekly Content under Summary with bullet points
+  data.weeklyContent.forEach((week) => {
+    // Check if we need a new page
+    if (yPos > 250) {
+      doc.addPage();
+      yPos = 20;
+    }
+
+    // Week header
+    doc.setFont("times", "bold");
+    doc.text(week.week + " :", 20, yPos);
+    yPos += 10;
+
+    // Week content points with bullet points
+    doc.setFont("times", "normal");
+    week.content.forEach((point) => {
+      // Check if we need a new page
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      // Add bullet point
+      doc.text("•", 25, yPos);
+      
+      // Handle text wrapping for content
+      const pointLines = doc.splitTextToSize(point, 150);
+      doc.text(pointLines, 35, yPos);
+      
+      yPos += (pointLines.length * 7);
+    });
+
+    yPos += 5;
+  });
+
+  // Working Approach
+  if (yPos > 220) {
+    doc.addPage();
+    yPos = 20;
+  }
+
+  doc.setFont("times", "bold");
+  doc.text("Working Approach:", 20, yPos);
+  yPos += 10;
+
+  doc.setFont("times", "normal");
+  const approachLines = doc.splitTextToSize(data.workingApproach, 170);
+  doc.text(approachLines, 20, yPos);
+  yPos += (approachLines.length * 7) + 15;
+
+  // Add signature section
+  doc.setFont("times", "normal");
+  doc.text("Sign of Engineer In-charge / Project", 20, yPos);
+  doc.text(`Date: ${new Date(data.date).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  })}`, 20, yPos + 10);
+
+  // Save PDF
+  doc.save("project_activity_report.pdf");
 };
