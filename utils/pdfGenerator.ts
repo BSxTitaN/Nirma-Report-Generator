@@ -45,33 +45,50 @@ export const generateWorksheetPDF = (formData: FormData): void => {
 
   // Table Content
   let yPos = 120;
+  const pageHeight = doc.internal.pageSize.height;
+  const dateColWidth = 40;
+  const taskColWidth = 130;
+
   formData.entries.forEach((entry) => {
-    // Draw cell borders
-    doc.rect(20, yPos, 40, 10);
-    doc.rect(60, yPos, 130, 10);
+    // Prepare date
+    const formattedDate = entry.date 
+      ? new Date(entry.date).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : "";
 
-    // Add content
-    doc.setFont("times", "normal");
-    if (entry.date) {
-      const formattedDate = new Date(entry.date).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      doc.text(formattedDate, 25, yPos + 6);
-    }
+    // Split task into multiple lines
+    const splitTask = doc.splitTextToSize(entry.task || "", taskColWidth - 10);
+    
+    // Calculate row height based on content
+    const lineHeight = 6;
+    const dateLines = 1;
+    const taskLines = splitTask.length;
+    const rowHeight = Math.max(dateLines, taskLines) * lineHeight + 4;
 
-    // Handle long task descriptions with word wrap
-    const splitTask = doc.splitTextToSize(entry.task, 120);
-    doc.text(splitTask, 65, yPos + 6);
-
-    yPos += 10;
-
-    // Add new page if needed
-    if (yPos > 280) {
+    // Check if we need a new page
+    if (yPos + rowHeight > pageHeight - 30) {
       doc.addPage();
       yPos = 20;
     }
+
+    // Draw cell borders with dynamic height
+    doc.rect(20, yPos, dateColWidth, rowHeight);
+    doc.rect(60, yPos, taskColWidth, rowHeight);
+
+    // Add content
+    doc.setFont("times", "normal");
+    
+    // Date
+    doc.text(formattedDate, 25, yPos + lineHeight);
+
+    // Task
+    doc.text(splitTask, 65, yPos + lineHeight);
+
+    // Move to next row
+    yPos += rowHeight;
   });
 
   // Add signature section
@@ -82,6 +99,7 @@ export const generateWorksheetPDF = (formData: FormData): void => {
   // Save PDF
   doc.save("daily_worksheet.pdf");
 };
+
 
 export const generateEngagementPDF = (data: EngagementScheduleData): void => {
   const doc = new jsPDF();
