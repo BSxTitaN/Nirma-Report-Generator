@@ -405,7 +405,7 @@ export const generateAllotmentPDF = (data: AllotmentFormData): void => {
 
   // Title Page - All bold
   centeredText('Major Project', 50, 24);
-  centeredText('Student Engagement Schedule', 70, 20);
+  centeredText('Project Allotment Letter', 70, 20);
 
   // Submitted By section - Headers bold, content normal
   centeredText('Submitted By', 120, 16);
