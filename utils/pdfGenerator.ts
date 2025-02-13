@@ -51,7 +51,7 @@ export const generateWorksheetPDF = (formData: FormData): void => {
 
   formData.entries.forEach((entry) => {
     // Prepare date
-    const formattedDate = entry.date 
+    const formattedDate = entry.date
       ? new Date(entry.date).toLocaleDateString("en-GB", {
           day: "numeric",
           month: "short",
@@ -61,7 +61,7 @@ export const generateWorksheetPDF = (formData: FormData): void => {
 
     // Split task into multiple lines
     const splitTask = doc.splitTextToSize(entry.task || "", taskColWidth - 10);
-    
+
     // Calculate row height based on content
     const lineHeight = 6;
     const dateLines = 1;
@@ -80,7 +80,7 @@ export const generateWorksheetPDF = (formData: FormData): void => {
 
     // Add content
     doc.setFont("times", "normal");
-    
+
     // Date
     doc.text(formattedDate, 25, yPos + lineHeight);
 
@@ -100,108 +100,178 @@ export const generateWorksheetPDF = (formData: FormData): void => {
   doc.save("daily_worksheet.pdf");
 };
 
-
 export const generateEngagementPDF = (data: EngagementScheduleData): void => {
-  const doc = new jsPDF();
+  // Initialize PDF with A4 format
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
 
-  // Set font to Times New Roman
-  doc.setFont("times", "normal");
-
-  // Header
-  doc.setFontSize(20);
-  doc.setFont("times", "bold");
-  doc.text("Major Project", 105, 30, { align: "center" });
-
-  doc.setFontSize(18);
-  doc.text("Student Engagement Schedule", 105, 45, { align: "center" });
-
-  // Student Details
-  doc.setFontSize(14);
-  doc.text("Submitted By", 105, 70, { align: "center" });
-  doc.text(data.studentName, 105, 85, { align: "center" });
-  doc.text(`(${data.rollNo})`, 105, 95, { align: "center" });
-
-  // Guide Details
-  doc.text("Guided By", 105, 115, { align: "center" });
-  doc.text(data.guidedBy, 105, 130, { align: "center" });
-
-  // Department Details
-  doc.setFontSize(12);
-  doc.text(data.department, 105, 155, { align: "center" });
-  doc.text("Institute of Technology", 105, 165, { align: "center" });
-  doc.text("Nirma University", 105, 175, { align: "center" });
-  doc.text("Ahmedabad - 382481", 105, 185, { align: "center" });
-
-  // Add new page for weekly tasks
-  doc.addPage();
-
-  // Weekly Tasks Table
-  doc.setFontSize(16);
-  doc.text("Week wise tasks", 20, 20);
-
-  let yPos = 40;
+  // Define page dimensions
+  const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
+  const margins = {
+    top: 20,
+    bottom: 20,
+    left: 25,
+    right: 25
+  };
+
+  // Helper function for centered text
+  const centeredText = (text: string, y: number, fontSize: number = 12, isBold: boolean = true) => {
+    doc.setFontSize(fontSize);
+    doc.setFont('times', isBold ? 'bold' : 'normal');
+    doc.text(text, pageWidth / 2, y, { align: 'center' });
+  };
+
+  // Title Page - All bold
+  centeredText('Major Project', 50, 24);
+  centeredText('Student Engagement Schedule', 70, 20);
+
+  // Submitted By section - Headers bold, content normal
+  centeredText('Submitted By', 120, 16);
+  centeredText(data.studentName, 130, 14, false);
+  centeredText(`(${data.rollNo})`, 140, 14, false);
+
+  // Guided By section - Headers bold, content normal
+  centeredText('Guided By', 160, 16);
+  centeredText(data.guidedBy, 170, 14, false);
+
+  // University details - All bold with larger image
+  doc.addImage('/Logo.png', 'PNG', pageWidth/2 - 40, 190, 80, 40);
+  
+  centeredText(data.department, 245, 12);
+  centeredText('Institute of Technology', 252, 12);
+  centeredText('Nirma University', 259, 12);
+  centeredText('Ahmedabad - 382481', 266, 12);
+
+  // Weekly Tasks Pages
+  doc.addPage();
+  let currentY = margins.top;
+  
+  // Week wise tasks header - Bold
+  doc.setFont('times', 'bold');
+  doc.setFontSize(16);
+  doc.text('Week wise tasks', margins.left, currentY);
+  currentY += 15;
+
+  // Create table
+  const createCell = (x: number, y: number, width: number, text: string, isHeader: boolean = false) => {
+    doc.setFontSize(11); // Slightly smaller font for table content
+    doc.setFont('times', isHeader ? 'bold' : 'normal');
+    
+    // Split text to fit within cell width (accounting for padding)
+    const maxWidth = width - 10; // 5mm padding on each side
+    const lines = doc.splitTextToSize(text, maxWidth);
+    
+    // Calculate required height based on number of lines
+    const lineHeight = 5; // 5mm per line
+    const textHeight = lines.length * lineHeight;
+    const minHeight = isHeader ? 10 : Math.max(15, textHeight + 6); // minimum 15mm for content, 10mm for header
+    
+    // Draw cell background and border
+    doc.setFillColor(isHeader ? 230 : 245, 245, 245);
+    doc.rect(x, y, width, minHeight, 'F');
+    doc.setDrawColor(0);
+    doc.rect(x, y, width, minHeight);
+    
+    // Draw text with proper line breaks
+    lines.forEach((line: string, index: number) => {
+      const textY = y + 5 + (index * lineHeight); // 5mm initial padding
+      doc.text(line, x + 5, textY);
+    });
+    
+    return minHeight; // Return the height used
+  };
 
   // Table headers
-  doc.setFontSize(12);
-  doc.setFont("times", "bold");
-  doc.rect(20, yPos - 10, 40, 10);
-  doc.rect(60, yPos - 10, 130, 10);
-  doc.text("Week", 30, yPos - 3);
-  doc.text("Task", 110, yPos - 3);
+  const colWidths = [40, pageWidth - margins.left - margins.right - 40];
+  const headerHeight = createCell(margins.left, currentY, colWidths[0], 'Week', true);
+  createCell(margins.left + colWidths[0], currentY, colWidths[1], 'Task', true);
+  currentY += headerHeight;
 
   // Table content
-  doc.setFont("times", "normal");
   data.weeklyTasks.forEach((task) => {
-    // Check if we need a new page
-    if (yPos > pageHeight - 20) {
+    if (currentY > pageHeight - margins.bottom - 15) {
       doc.addPage();
-      yPos = 20;
+      currentY = margins.top;
     }
 
-    doc.rect(20, yPos, 40, 20);
-    doc.rect(60, yPos, 130, 20);
-
-    // Week
-    doc.text(task.week, 25, yPos + 10);
-
-    // Task (with word wrap)
-    const splitTask = doc.splitTextToSize(task.task, 120);
-    doc.text(splitTask, 65, yPos + 10);
-
-    yPos += 20;
+    // Pre-calculate the heights needed for both cells
+    const weekLines = doc.splitTextToSize(task.week, colWidths[0] - 10);
+    const taskLines = doc.splitTextToSize(task.task, colWidths[1] - 10);
+    
+    const weekHeight = Math.max(15, weekLines.length * 5 + 6);
+    const taskHeight = Math.max(15, taskLines.length * 5 + 6);
+    
+    // Use the larger height for both cells
+    const rowHeight = Math.max(weekHeight, taskHeight);
+    
+    // Create both cells with the same height
+    doc.setFillColor(245, 245, 245);
+    doc.rect(margins.left, currentY, colWidths[0], rowHeight, 'F');
+    doc.rect(margins.left + colWidths[0], currentY, colWidths[1], rowHeight, 'F');
+    doc.setDrawColor(0);
+    doc.rect(margins.left, currentY, colWidths[0], rowHeight);
+    doc.rect(margins.left + colWidths[0], currentY, colWidths[1], rowHeight);
+    
+    // Add text to both cells
+    doc.setFont('times', 'normal');
+    doc.setFontSize(11);
+    weekLines.forEach((line: string, index: number) => {
+      doc.text(line, margins.left + 5, currentY + 5 + (index * 5));
+    });
+    
+    taskLines.forEach((line: string, index: number) => {
+      doc.text(line, margins.left + colWidths[0] + 5, currentY + 5 + (index * 5));
+    });
+    
+    currentY += rowHeight;
   });
 
-  // Add Daily Schedule on new page
+  // Daily Schedule
   doc.addPage();
-  doc.setFontSize(16);
-  doc.setFont("times", "bold");
-  doc.text("Daily Schedule", 20, 20);
+  currentY = margins.top;
 
-  yPos = 40;
+  // Daily Schedule header - Bold
+  doc.setFont('times', 'bold');
+  doc.setFontSize(16);
+  doc.text('Daily Schedule', margins.left, currentY);
+  currentY += 15;
+
+  // Daily Schedule content - Normal with reduced spacing
+  doc.setFont('times', 'normal');
   doc.setFontSize(12);
-  doc.setFont("times", "normal");
 
   data.dailySchedule.forEach((item, index) => {
-    const number = `${index + 1}.`;
-    const splitText = doc.splitTextToSize(item.item, 150);
+    const text = `${index + 1}. ${item.item}`;
+    const lines = doc.splitTextToSize(text, pageWidth - margins.left - margins.right);
+    
+    if (currentY + (lines.length * 5) > pageHeight - margins.bottom) {
+      doc.addPage();
+      currentY = margins.top;
+    }
 
-    doc.text(number, 20, yPos);
-    doc.text(splitText, 35, yPos);
-
-    yPos += 10 * splitText.length + 5;
+    doc.text(lines, margins.left, currentY);
+    currentY += lines.length * 5 + 2; // Reduced spacing between items from 7+5 to 5+2
   });
 
-  // Project Head details
-  yPos += 20;
-  doc.text(data.projectHead.name, 20, yPos);
-  doc.text(data.projectHead.designation, 20, yPos + 10);
-  doc.text(
-    `Date: ${new Date(data.date).toLocaleDateString("en-GB")}`,
-    20,
-    yPos + 20
-  );
+  // Project Head details - Bold headers, normal content
+  currentY += 20;
+  doc.setFont('times', 'bold');
+  doc.text(data.projectHead.name, margins.left, currentY);
+  currentY += 7;
+  doc.setFont('times', 'normal');
+  doc.text(data.projectHead.designation, margins.left, currentY);
+  currentY += 15;
+  doc.setFont('times', 'bold');
+  doc.text(`Date: ${new Date(data.date).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  })}`, margins.left, currentY);
 
-  // Save the PDF
-  doc.save("student_engagement_schedule.pdf");
+  // Save PDF
+  doc.save('student_engagement_schedule.pdf');
 };
