@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorksheetForm } from "./WorksheetForm";
 import { EngagementForm } from "./EngagementForm";
 import { ActivityReportForm } from "./ActivityReportForm";
+import PPRForm from "./PPRForm";
 import AllotmentForm from "./AllotmentForm";
 
 export const ReportSelector: React.FC = () => {
@@ -27,11 +28,12 @@ export const ReportSelector: React.FC = () => {
       </div>
 
       <Tabs defaultValue="DWS" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="DWS">Daily Worksheet</TabsTrigger>
           <TabsTrigger value="ENGAGEMENT">Student Engagement</TabsTrigger>
           <TabsTrigger value="PAR">Project Activity Report</TabsTrigger>
           <TabsTrigger value="ALLOTMENT">Project Allotment</TabsTrigger>
+          <TabsTrigger value="PPR">Preliminary Project Info</TabsTrigger>
         </TabsList>
 
         <TabsContent value="DWS" className="mt-6">
@@ -86,6 +88,20 @@ export const ReportSelector: React.FC = () => {
             </CardHeader>
             <CardContent>
               <AllotmentForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="PPR" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Preliminary Project Information Report</CardTitle>
+              <CardDescription>
+                Generate a detailed report outlining your project objectives, scope, and specifications.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PPRForm />
             </CardContent>
           </Card>
         </TabsContent>
