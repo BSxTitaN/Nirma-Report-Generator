@@ -8,7 +8,9 @@ export interface FormData {
   studentName: string;
   rollNo: string;
   companyName: string;
+  docNo: string;
   entries: TaskEntry[];
+  signatureDate: string; // Add this new field
 }
 
 export interface TaskEntryProps {

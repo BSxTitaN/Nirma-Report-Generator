@@ -17,7 +17,9 @@ interface FormData {
   studentName: string;
   rollNo: string;
   companyName: string;
+  docNo: string;
   entries: TaskEntry[];
+  signatureDate: string; // Add this new field
 }
 
 export const WorksheetForm: React.FC = () => {
@@ -25,12 +27,14 @@ export const WorksheetForm: React.FC = () => {
     studentName: "",
     rollNo: "",
     companyName: "",
+    docNo: "",
     entries: [{ date: "", task: "" }],
+    signatureDate: new Date().toISOString().split("T")[0],
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -46,7 +50,7 @@ export const WorksheetForm: React.FC = () => {
       ...newEntries[index],
       [field]: value,
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       entries: newEntries,
     }));
@@ -68,8 +72,8 @@ export const WorksheetForm: React.FC = () => {
 
       nextDate = nextDay.toISOString().split("T")[0];
     }
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       entries: [...prev.entries, { date: nextDate, task: "" }],
     }));
@@ -78,7 +82,7 @@ export const WorksheetForm: React.FC = () => {
 
   const removeEntry = (index: number) => {
     if (formData.entries.length <= 1) return;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       entries: prev.entries.filter((_, i) => i !== index),
     }));
@@ -157,6 +161,19 @@ export const WorksheetForm: React.FC = () => {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Doc No</label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">DWS - </span>
+                <Input
+                  name="docNo"
+                  value={formData.docNo}
+                  onChange={handleInputChange}
+                  className="w-24"
+                  required
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -181,6 +198,18 @@ export const WorksheetForm: React.FC = () => {
                 canRemove={formData.entries.length > 1}
               />
             ))}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Signature Date</label>
+            <Input
+              type="date"
+              name="signatureDate"
+              value={formData.signatureDate}
+              onChange={handleInputChange}
+              className="w-full"
+              required
+            />
           </div>
 
           <div className="flex justify-end">

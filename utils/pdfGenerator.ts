@@ -12,43 +12,50 @@ export const generateWorksheetPDF = (formData: FormData): void => {
   // Add Times New Roman font
   doc.setFont("times", "bold");
 
-  // Header
-  doc.setFontSize(16);
-  doc.text("NIRMA UNIVERSITY", 105, 20, { align: "center" });
-  doc.text("INSTITUTE OF TECHNOLOGY", 105, 30, { align: "center" });
-  doc.text("COMPUTER SCIENCE ENGINEERING", 105, 40, { align: "center" });
-  doc.text("DAILY WORKSHEET (DWS)", 105, 50, { align: "center" });
+ // Header
+ doc.setFontSize(16);
+ doc.text("NIRMA UNIVERSITY", 105, 25, { align: "center" });
+ doc.text("INSTITUTE OF TECHNOLOGY", 105, 35, { align: "center" });
+ doc.text("COMPUTER SCIENCE ENGINEERING", 105, 45, { align: "center" });
+ doc.text("DAILY WORKSHEET (DWS)", 105, 55, { align: "center" });
 
-  // Student Details
-  doc.setFontSize(12);
-  doc.text("NAME OF THE STUDENT", 20, 70);
-  doc.text(":", 80, 70);
-  doc.setFont("times", "normal");
-  doc.text(formData.studentName, 85, 70);
+ // Add Doc No
+ doc.setFontSize(12);
+ doc.setFont("times", "bold");
+ doc.text("DWS No -", 20, 70);
+ doc.setFont("times", "normal");
+ doc.text(formData.docNo, 60, 70);
 
-  doc.setFont("times", "bold");
-  doc.text("ROLL NO.", 20, 80);
-  doc.text(":", 80, 80);
-  doc.setFont("times", "normal");
-  doc.text(formData.rollNo, 85, 80);
+ // Student Details
+ doc.setFont("times", "bold");
+ doc.text("NAME OF THE STUDENT", 20, 85);
+ doc.text(":", 80, 85);
+ doc.setFont("times", "normal");
+ doc.text(formData.studentName, 85, 85);
 
-  doc.setFont("times", "bold");
-  doc.text("NAME OF THE COMPANY", 20, 90);
-  doc.text(":", 80, 90);
-  doc.setFont("times", "normal");
-  doc.text(formData.companyName, 85, 90);
+ doc.setFont("times", "bold");
+ doc.text("ROLL NO.", 20, 100);
+ doc.text(":", 80, 100);
+ doc.setFont("times", "normal");
+ doc.text(formData.rollNo, 85, 100);
 
-  // Table Header
-  doc.setFont("times", "bold");
-  doc.setFillColor(240, 240, 240);
-  doc.rect(20, 110, 40, 10, "F");
-  doc.rect(60, 110, 130, 10, "F");
-  doc.text("DATE", 30, 116);
-  doc.text("TASK", 110, 116);
+ doc.setFont("times", "bold");
+ doc.text("NAME OF THE COMPANY", 20, 115);
+ doc.text(":", 80, 115);
+ doc.setFont("times", "normal");
+ doc.text(formData.companyName, 85, 115);
 
-  // Table Content
-  let yPos = 120;
-  const pageHeight = doc.internal.pageSize.height;
+ // Table Header
+ doc.setFont("times", "bold");
+ doc.setFillColor(240, 240, 240);
+ doc.rect(20, 130, 40, 10, "F");
+ doc.rect(60, 130, 130, 10, "F");
+ doc.text("DATE", 30, 136);
+ doc.text("TASK", 110, 136);
+
+ // Update initial yPos for table content
+ let yPos = 140;
+ const pageHeight = doc.internal.pageSize.height;
   const dateColWidth = 40;
   const taskColWidth = 130;
 
@@ -97,7 +104,11 @@ export const generateWorksheetPDF = (formData: FormData): void => {
   // Add signature section
   doc.setFont("times", "normal");
   doc.text("Sign of Engineer In-charge / Project", 20, yPos + 20);
-  doc.text(`Date: ${new Date().toLocaleDateString("en-GB")}`, 20, yPos + 30);
+  doc.text(
+    `Date: ${new Date(formData.signatureDate).toLocaleDateString("en-GB")}`,
+    20,
+    yPos + 30
+  );
 
   // Save PDF
   doc.save("daily_worksheet.pdf");
@@ -319,33 +330,41 @@ export const generateActivityReportPDF = (data: ActivityReportData): void => {
   // Add Times New Roman font
   doc.setFont("times", "bold");
 
-  // Header
-  doc.setFontSize(16);
-  doc.text("NIRMA UNIVERSITY", 105, 20, { align: "center" });
-  doc.text("INSTITUTE OF TECHNOLOGY", 105, 30, { align: "center" });
-  doc.text("COMPUTER SCIENCE ENGINEERING", 105, 40, { align: "center" });
-  doc.text("PROJECT ACTIVITY REPORT (PAR)", 105, 50, { align: "center" });
-
-  // Student Details
-  doc.setFontSize(12);
-  doc.text("NAME OF THE STUDENT", 20, 70);
-  doc.text(":", 80, 70);
-  doc.setFont("times", "normal");
-  doc.text(data.studentName, 85, 70);
-
-  doc.setFont("times", "bold");
-  doc.text("ROLL NO.", 20, 80);
-  doc.text(":", 80, 80);
-  doc.setFont("times", "normal");
-  doc.text(data.rollNo, 85, 80);
-
-  doc.setFont("times", "bold");
-  doc.text("NAME OF THE COMPANY", 20, 90);
-  doc.text(":", 80, 90);
-  doc.setFont("times", "normal");
-  doc.text(data.companyName, 85, 90);
-
-  let yPos = 110;
+   // Header
+   doc.setFontSize(16);
+   doc.text("NIRMA UNIVERSITY", 105, 25, { align: "center" });
+   doc.text("INSTITUTE OF TECHNOLOGY", 105, 35, { align: "center" });
+   doc.text("COMPUTER SCIENCE ENGINEERING", 105, 45, { align: "center" });
+   doc.text("PROJECT ACTIVITY REPORT (PAR)", 105, 55, { align: "center" });
+ 
+   // Add Doc No
+   doc.setFontSize(12);
+   doc.setFont("times", "bold");
+   doc.text("PAR No -", 20, 70);
+   doc.setFont("times", "normal");
+   doc.text(data.docNo, 60, 70);
+ 
+   // Student Details
+   doc.setFont("times", "bold");
+   doc.text("NAME OF THE STUDENT", 20, 85);
+   doc.text(":", 80, 85);
+   doc.setFont("times", "normal");
+   doc.text(data.studentName, 85, 85);
+ 
+   doc.setFont("times", "bold");
+   doc.text("ROLL NO.", 20, 100);
+   doc.text(":", 80, 100);
+   doc.setFont("times", "normal");
+   doc.text(data.rollNo, 85, 100);
+ 
+   doc.setFont("times", "bold");
+   doc.text("NAME OF THE COMPANY", 20, 115);
+   doc.text(":", 80, 115);
+   doc.setFont("times", "normal");
+   doc.text(data.companyName, 85, 115);
+ 
+   // Start summary section at adjusted position
+   let yPos = 135;
 
   // Summary header with proper underline
   doc.setFont("times", "bold");
@@ -579,7 +598,7 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
-    format: "a4"
+    format: "a4",
   });
 
   // Track section pages for TOC
@@ -589,7 +608,7 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     testing: 3,
     specs: 3,
     toolset: 3,
-    personal: 3
+    personal: 3,
   };
 
   // Page dimensions and margins
@@ -599,7 +618,7 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     top: 20,
     bottom: 30, // Increased bottom margin for page numbers
     left: 20,
-    right: 20
+    right: 20,
   };
 
   // Spacing constants
@@ -613,12 +632,9 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     doc.setFont("times", "normal");
     doc.setFontSize(10);
     const pageNum = doc.getCurrentPageInfo().pageNumber;
-    doc.text(
-      String(pageNum), 
-      pageWidth / 2, 
-      pageHeight - (margins.bottom / 2), 
-      { align: "center" }
-    );
+    doc.text(String(pageNum), pageWidth / 2, pageHeight - margins.bottom / 2, {
+      align: "center",
+    });
   };
 
   const checkPageBreak = (requiredSpace: number, currentY: number): number => {
@@ -631,9 +647,9 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   };
 
   const centeredText = (
-    text: string, 
-    y: number, 
-    fontSize: number = 12, 
+    text: string,
+    y: number,
+    fontSize: number = 12,
     isBold: boolean = true
   ) => {
     doc.setFontSize(fontSize);
@@ -643,8 +659,8 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
 
   // Calculate content height before adding to page
   const calculateContentHeight = (
-    text: string, 
-    maxWidth: number, 
+    text: string,
+    maxWidth: number,
     fontSize: number = 12
   ): number => {
     doc.setFontSize(fontSize);
@@ -663,7 +679,7 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   centeredText(data.guidedBy, 170, 14, false);
 
   // Add university logo
-  doc.addImage("/Logo.png", "PNG", pageWidth/2 - 40, 190, 80, 40);
+  doc.addImage("/Logo.png", "PNG", pageWidth / 2 - 40, 190, 80, 40);
 
   // University details
   centeredText(data.department, 245, 12);
@@ -691,11 +707,17 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   // Objectives Content
   data.objectives.forEach((objective, index) => {
     // Calculate total height needed for this objective
-    let objectiveHeight = calculateContentHeight(objective.title, pageWidth - margins.left - margins.right);
-    objective.points.forEach(point => {
-      objectiveHeight += calculateContentHeight(point, pageWidth - margins.left - margins.right - 15);
+    let objectiveHeight = calculateContentHeight(
+      objective.title,
+      pageWidth - margins.left - margins.right
+    );
+    objective.points.forEach((point) => {
+      objectiveHeight += calculateContentHeight(
+        point,
+        pageWidth - margins.left - margins.right - 15
+      );
     });
-    objectiveHeight += (objective.points.length * PARAGRAPH_SPACING);
+    objectiveHeight += objective.points.length * PARAGRAPH_SPACING;
 
     yPos = checkPageBreak(objectiveHeight + SECTION_SPACING, yPos);
 
@@ -705,13 +727,13 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     yPos += SUBSECTION_SPACING;
 
     doc.setFont("times", "normal");
-    objective.points.forEach(point => {
+    objective.points.forEach((point) => {
       const pointLines = doc.splitTextToSize(
-        `• ${point}`, 
+        `• ${point}`,
         pageWidth - margins.left - margins.right - 15
       );
       doc.text(pointLines, margins.left + 15, yPos);
-      yPos += (pointLines.length * LINE_HEIGHT) + PARAGRAPH_SPACING;
+      yPos += pointLines.length * LINE_HEIGHT + PARAGRAPH_SPACING;
     });
   });
 
@@ -733,8 +755,11 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
 
   // Calculate total scope content height
   let scopeHeight = 0;
-  data.scopePoints.forEach(scope => {
-    scopeHeight += calculateContentHeight(scope.point, pageWidth - margins.left - margins.right);
+  data.scopePoints.forEach((scope) => {
+    scopeHeight += calculateContentHeight(
+      scope.point,
+      pageWidth - margins.left - margins.right
+    );
     scopeHeight += PARAGRAPH_SPACING;
   });
 
@@ -748,11 +773,11 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.setFontSize(12);
   data.scopePoints.forEach((scope, index) => {
     const scopeLines = doc.splitTextToSize(
-      `${index + 1}. ${scope.point}`, 
+      `${index + 1}. ${scope.point}`,
       pageWidth - margins.left - margins.right
     );
     doc.text(scopeLines, margins.left, yPos);
-    yPos += (scopeLines.length * LINE_HEIGHT) + PARAGRAPH_SPACING;
+    yPos += scopeLines.length * LINE_HEIGHT + PARAGRAPH_SPACING;
   });
 
   // Testing Section with similar height calculations and spacing management
@@ -763,13 +788,19 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     14
   );
 
-  data.testingPoints.forEach(point => {
-    testingHeight += calculateContentHeight(point.point, pageWidth - margins.left - margins.right);
+  data.testingPoints.forEach((point) => {
+    testingHeight += calculateContentHeight(
+      point.point,
+      pageWidth - margins.left - margins.right
+    );
     testingHeight += PARAGRAPH_SPACING;
   });
 
-  data.qaPoints.forEach(point => {
-    testingHeight += calculateContentHeight(point.point, pageWidth - margins.left - margins.right);
+  data.qaPoints.forEach((point) => {
+    testingHeight += calculateContentHeight(
+      point.point,
+      pageWidth - margins.left - margins.right
+    );
     testingHeight += PARAGRAPH_SPACING;
   });
 
@@ -793,11 +824,11 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.setFont("times", "normal");
   data.testingPoints.forEach((point, index) => {
     const testLines = doc.splitTextToSize(
-      `${index + 1}. ${point.point}`, 
+      `${index + 1}. ${point.point}`,
       pageWidth - margins.left - margins.right
     );
     doc.text(testLines, margins.left, yPos);
-    yPos += (testLines.length * LINE_HEIGHT) + PARAGRAPH_SPACING;
+    yPos += testLines.length * LINE_HEIGHT + PARAGRAPH_SPACING;
   });
 
   yPos += SUBSECTION_SPACING;
@@ -808,11 +839,11 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.setFont("times", "normal");
   data.qaPoints.forEach((point, index) => {
     const qaLines = doc.splitTextToSize(
-      `${index + 1}. ${point.point}`, 
+      `${index + 1}. ${point.point}`,
       pageWidth - margins.left - margins.right
     );
     doc.text(qaLines, margins.left, yPos);
-    yPos += (qaLines.length * LINE_HEIGHT) + PARAGRAPH_SPACING;
+    yPos += qaLines.length * LINE_HEIGHT + PARAGRAPH_SPACING;
   });
 
   // Specifications and Schedule Section
@@ -828,11 +859,11 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.setFont("times", "normal");
   doc.setFontSize(12);
   const specLines = doc.splitTextToSize(
-    data.specifications, 
+    data.specifications,
     pageWidth - margins.left - margins.right
   );
   doc.text(specLines, margins.left, yPos);
-  yPos += (specLines.length * LINE_HEIGHT) + SECTION_SPACING;
+  yPos += specLines.length * LINE_HEIGHT + SECTION_SPACING;
 
   // Project Schedule with image
   doc.setFont("times", "bold");
@@ -890,7 +921,8 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
 
   doc.setFontSize(12);
   data.toolset.forEach((category, index) => {
-    const totalHeight = LINE_HEIGHT + (category.tools.length * (LINE_HEIGHT + PARAGRAPH_SPACING));
+    const totalHeight =
+      LINE_HEIGHT + category.tools.length * (LINE_HEIGHT + PARAGRAPH_SPACING);
     yPos = checkPageBreak(totalHeight + SUBSECTION_SPACING, yPos);
 
     doc.setFont("times", "bold");
@@ -898,7 +930,7 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     yPos += SUBSECTION_SPACING;
 
     doc.setFont("times", "normal");
-    category.tools.forEach(tool => {
+    category.tools.forEach((tool) => {
       doc.text(`• ${tool}`, margins.left + 15, yPos);
       yPos += LINE_HEIGHT + PARAGRAPH_SPACING;
     });
@@ -917,14 +949,14 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   doc.setFontSize(12);
   doc.text("Address of stay:", margins.left, yPos);
   yPos += SUBSECTION_SPACING;
-  
+
   doc.setFont("times", "normal");
   const addressLines = doc.splitTextToSize(
-    data.personalDetails.address, 
+    data.personalDetails.address,
     pageWidth - margins.left - margins.right
   );
   doc.text(addressLines, margins.left, yPos);
-  yPos += (addressLines.length * LINE_HEIGHT) + SECTION_SPACING;
+  yPos += addressLines.length * LINE_HEIGHT + SECTION_SPACING;
 
   doc.setFont("times", "bold");
   doc.text("Distance from company:", margins.left, yPos);
@@ -941,20 +973,20 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
 
   // Signature section at bottom of page
   yPos = pageHeight - margins.bottom - 140; // Increased space for head details
-  
+
   // Project Head details
   doc.setFont("times", "normal");
   doc.text(data.projectHead.name, margins.left, yPos);
   yPos += SUBSECTION_SPACING;
   doc.text(data.projectHead.designation, margins.left, yPos);
   yPos += SECTION_SPACING;
-  
+
   // Date
   doc.text(
     `Date: ${new Date(data.date).toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
-      year: "numeric"
+      year: "numeric",
     })}`,
     margins.left,
     yPos
@@ -974,14 +1006,17 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
   const tocItems = [
     { text: "Objectives", page: sectionPages.objectives },
     { text: "Scope of Project", page: sectionPages.scope },
-    { text: "Software Testing and Quality Assurance", page: sectionPages.testing },
+    {
+      text: "Software Testing and Quality Assurance",
+      page: sectionPages.testing,
+    },
     { text: "Specifications of the Project", page: sectionPages.specs },
     { text: "Project Schedule", page: sectionPages.specs },
     { text: "Toolset Used", page: sectionPages.toolset },
-    { text: "Personal Details", page: sectionPages.personal }
+    { text: "Personal Details", page: sectionPages.personal },
   ];
 
-  tocItems.forEach(item => {
+  tocItems.forEach((item) => {
     // Calculate space needed for dots
     const textWidth = doc.getTextWidth(item.text);
     const pageNumWidth = doc.getTextWidth(item.page.toString());
@@ -994,8 +1029,8 @@ export const generatePPRPDF = async (data: PPRFormData): Promise<void> => {
     doc.text(item.text, margins.left, yPos);
     doc.text(dots, margins.left + textWidth + 2, yPos);
     doc.text(
-      item.page.toString(), 
-      pageWidth - margins.right - pageNumWidth, 
+      item.page.toString(),
+      pageWidth - margins.right - pageNumWidth,
       yPos
     );
     yPos += LINE_HEIGHT;
